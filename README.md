@@ -31,3 +31,9 @@ get-childitem env:Qt5_DIR
 conan build . 
 ```
 exe 文件在build/bin目录下
+
+```bat
+cmake -B build
+cmake --build build --config Release --target app
+cmake --build build --config Release --target tests
+```

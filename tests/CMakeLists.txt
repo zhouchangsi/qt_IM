@@ -1,10 +1,12 @@
 cmake_minimum_required(VERSION 3.15)
 
-set(TARGET_NAME tests)
+set(target_name tests)
 
-find_package(GTest REQUIRED)
-message(STATUS "GTest_INCLUDE_DIRS: ${GTest_INCLUDE_DIRS}")
+find_package(GTest CONFIG REQUIRED)
 
-include_directories(${GTest_INCLUDE_DIRS})
-add_executable(${TARGET_NAME} example.cpp)
-target_link_libraries(${TARGET_NAME} PRIVATE GTest::GTest GTest::Main)
+add_executable(${target_name} example.cpp)
+target_link_libraries(${target_name} PRIVATE
+    GTest::GTest GTest::Main
+    lib_my_widgets
+)
+install(TARGETS ${target_name} DESTINATION bin)
