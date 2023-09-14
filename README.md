@@ -28,7 +28,7 @@ get-childitem env:Qt5_DIR
 
 ```bat
 # 生成项目
-conan build . 
+conan build . --settings arch=x86 
 ```
 exe 文件在build/bin目录下
 

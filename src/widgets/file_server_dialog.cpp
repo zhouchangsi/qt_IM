@@ -25,36 +25,31 @@ FileServerDialog::~FileServerDialog() {
 void FileServerDialog::send_chat_message() {
   ui_->send_file_push_button->setEnabled(false);
   server_socket_ = tcp_server_->nextPendingConnection();
-  connect(server_socket_, SIGNAL(bytesWritten(qint64)), this,
-          SLOT(refresh_progress(qint64)));
+  connect(server_socket_, SIGNAL(bytesWritten(qint64)), this, SLOT(refresh_progress(qint64)));
   file_ = new QFile(filepath_);
   file_->open((QFile::ReadOnly));
   file_total_bytes_ = file_->size();
-  QDataStream send_stream(&cache_data_of_1_transmission_, QIODevice::WriteOnly);
+  QDataStream send_stream(&transmission_block_, QIODevice::WriteOnly);
   send_stream.setVersion(QDataStream::Qt_5_11);
   time_.start();  // 开始计时
-  QString current_file =
-      filepath_.right(filepath_.size() - filepath_.lastIndexOf('/') - 1);
+  QString current_file = filepath_.right(filepath_.size() - filepath_.lastIndexOf('/') - 1);
   send_stream << qint64(0) << qint64(0) << current_file;
-  file_total_bytes_ += cache_data_of_1_transmission_.size();
+  file_total_bytes_ += transmission_block_.size();
   send_stream.device()->seek(0);
-  send_stream << file_total_bytes_
-              << qint64((cache_data_of_1_transmission_.size() -
-                         sizeof(qint64) * 2));
-  remaining_bytes_ =
-      file_total_bytes_ - server_socket_->write(cache_data_of_1_transmission_);
-  cache_data_of_1_transmission_.resize(0);
+  send_stream << file_total_bytes_ << qint64((transmission_block_.size() - sizeof(qint64) * 2));
+  remaining_bytes_ = file_total_bytes_ - server_socket_->write(transmission_block_);
+  transmission_block_.resize(0);
 }
 
 void FileServerDialog::refresh_progress(qint64 byte_count) {
   qApp->processEvents();
   sent_bytes_ += (int)byte_count;
   if (remaining_bytes_ > 0) {
-    cache_data_of_1_transmission_ =
+    transmission_block_ =
         file_->read(qMin(remaining_bytes_, payload_capacity_));
     remaining_bytes_ -=
-        (int)server_socket_->write(cache_data_of_1_transmission_);
-    cache_data_of_1_transmission_.resize(0);
+        (int)server_socket_->write(transmission_block_);
+    transmission_block_.resize(0);
   } else {
     file_->close();
   }
@@ -63,7 +58,7 @@ void FileServerDialog::refresh_progress(qint64 byte_count) {
   ui_->file_size_line_edit->setText(
       tr("%1").arg(file_total_bytes_ / (1024 * 1024)) + " MB");
   ui_->sent_size_line_edit->setText(tr("%1").arg(sent_bytes_ / (1024 * 1024)) +
-                                 " MB");
+                                    " MB");
   if (sent_bytes_ == file_total_bytes_) {
     file_->close();
     tcp_server_->close();
@@ -90,7 +85,7 @@ void FileServerDialog::on_send_file_push_button_clicked() {
     close();
     return;
   }
-  emit sent_file_name(filename_);
+  emit sent_filename(filename_);
 }
 
 void FileServerDialog::on_stop_push_button_clicked() {
@@ -102,7 +97,7 @@ void FileServerDialog::on_stop_push_button_clicked() {
   close();
 }
 
-void FileServerDialog::on_client_refused() {
+void FileServerDialog::handle_client_refused() {
   tcp_server_->close();
   QMessageBox::warning(0, QObject::tr("提示"), "对方拒绝接收！");
 }

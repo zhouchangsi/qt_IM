@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>FileCntDlg</class>
- <widget class="QDialog" name="FileCntDlg">
+ <class>FileClientDialog</class>
+ <widget class="QDialog" name="file_client_dialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>接 收 文 件</string>
   </property>
-  <widget class="QProgressBar" name="recvProgressBar">
+  <widget class="QProgressBar" name="receive_progress_bar">
    <property name="geometry">
     <rect>
      <x>100</x>
@@ -26,7 +26,7 @@
     <number>0</number>
    </property>
   </widget>
-  <widget class="QPushButton" name="cntClosePushButton">
+  <widget class="QPushButton" name="client_close_push_button">
    <property name="geometry">
     <rect>
      <x>340</x>
@@ -90,7 +90,7 @@
     <string>接 收 文 件</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="rfileNameLineEdit">
+  <widget class="QLineEdit" name="file_name_line_edit">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -153,7 +153,7 @@
     <string>已 接 收：</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="rfileSizeLineEdit">
+  <widget class="QLineEdit" name="file_size_line_edit">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -181,7 +181,7 @@
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QLineEdit" name="recvSizeLineEdit">
+  <widget class="QLineEdit" name="receive_size_line_edit">
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -228,7 +228,7 @@
     <string>进         度</string>
    </property>
   </widget>
-  <widget class="QLabel" name="rateLabel">
+  <widget class="QLabel" name="rate_label">
    <property name="geometry">
     <rect>
      <x>340</x>

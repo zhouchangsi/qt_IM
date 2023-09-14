@@ -7,10 +7,10 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOMOC ON)
 
 set(library_name lib_my_widgets)
-file(GLOB_RECURSE library_sources   *.cpp)
-file(GLOB_RECURSE library_headers   *.h)
-file(GLOB_RECURSE library_ui_files  *.ui)
-file(GLOB_RECURSE library_qrc_files *.qrc)
+file(GLOB_RECURSE library_sources   CONFIGURE_DEPENDS *.cpp)
+file(GLOB_RECURSE library_headers   CONFIGURE_DEPENDS *.h)
+file(GLOB_RECURSE library_ui_files  CONFIGURE_DEPENDS *.ui)
+file(GLOB_RECURSE library_qrc_files CONFIGURE_DEPENDS *.qrc)
 # exclude *_test.cpp from library_sources
 list(FILTER library_sources EXCLUDE REGEX ".*_test.cpp$")
 

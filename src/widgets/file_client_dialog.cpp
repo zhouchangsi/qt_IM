@@ -1,85 +1,85 @@
 #include "file_client_dialog.h"
 #include "ui_file_client_dialog.h"
 
-FileCntDlg::FileCntDlg(QWidget* parent)
-    : QDialog(parent), ui_(new Ui::FileCntDlg) {
+FileClientDialog::FileClientDialog(QWidget* parent)
+    : QDialog(parent), ui_(new Ui::FileClientDialog) {
   ui_->setupUi(this);
-  myCntSocket = new QTcpSocket(this);
-  mySrvPort = 5555;
-  connect(myCntSocket, SIGNAL(readyRead()), this, SLOT(readChatMsg()));
-  myFileNameSize = 0;
-  myTotalBytes = 0;
-  myRcvedBytes = 0;
+  client_socket_ = new QTcpSocket(this);
+  server_port_ = 5555;
+  connect(client_socket_, SIGNAL(readyRead()), this, SLOT(read_chat_message()));
+  filesize_ = 0;
+  total_bytes_ = 0;
+  received_bytes_ = 0;
 }
 
-FileCntDlg::~FileCntDlg() {
+FileClientDialog::~FileClientDialog() {
   delete ui_;
 }
 
-void FileCntDlg::getLocPath(QString lpath) {
-  myLocPathFile = new QFile(lpath);
+void FileClientDialog::set_file(QString path) {
+  file_ = new QFile(path);
 }
 
-void FileCntDlg::getSrvAddr(QHostAddress saddr) {
-  mySrvAddr = saddr;
-  createConnToSrv();
+void FileClientDialog::set_server_address(QHostAddress server_address) {
+  server_address_ = server_address;
+  connect_to_server();
 }
 
-void FileCntDlg::createConnToSrv() {
-  myBlockSize = 0;
-  myCntSocket->abort();
-  myCntSocket->connectToHost(mySrvAddr, mySrvPort);
-  mytime.start();
+void FileClientDialog::connect_to_server() {
+  block_size_ = 0;
+  client_socket_->abort();
+  client_socket_->connectToHost(server_address_, server_port_);
+  time_.start();
 }
 
-void FileCntDlg::readChatMsg() {
-  QDataStream in(myCntSocket);
+void FileClientDialog::read_chat_message() {
+  QDataStream in(client_socket_);
   in.setVersion(QDataStream::Qt_5_11);
-  float usedTime = mytime.elapsed();
-  if (myRcvedBytes <= sizeof(qint64) * 2) {
-    if ((myCntSocket->bytesAvailable() >= sizeof(qint64) * 2) &&
-        (myFileNameSize == 0)) {
-      in >> myTotalBytes >> myFileNameSize;
-      myRcvedBytes += sizeof(qint64) * 2;
+  float used_time = time_.elapsed();
+  if (received_bytes_ <= sizeof(qint64) * 2) {
+    if ((client_socket_->bytesAvailable() >= sizeof(qint64) * 2) &&
+        (filesize_ == 0)) {
+      in >> total_bytes_ >> filesize_;
+      received_bytes_ += sizeof(qint64) * 2;
     }
-    if ((myCntSocket->bytesAvailable() >= myFileNameSize) &&
-        (myFileNameSize != 0)) {
-      in >> myFileName;
-      myRcvedBytes += myFileNameSize;
-      myLocPathFile->open(QFile::WriteOnly);
-      ui_->rfileNameLineEdit->setText(myFileName);
+    if ((client_socket_->bytesAvailable() >= filesize_) && (filesize_ != 0)) {
+      in >> filename_;
+      received_bytes_ += filesize_;
+      file_->open(QFile::WriteOnly);
+      ui_->file_name_line_edit->setText(filename_);
     } else {
       return;
     }
   }
-  if (myRcvedBytes < myTotalBytes) {
-    myRcvedBytes += myCntSocket->bytesAvailable();
-    myInputBlock = myCntSocket->readAll();
-    myLocPathFile->write(myInputBlock);
-    myInputBlock.resize(0);
+  if (received_bytes_ < total_bytes_) {
+    received_bytes_ += client_socket_->bytesAvailable();
+    transmission_block_ = client_socket_->readAll();
+    file_->write(transmission_block_);
+    transmission_block_.resize(0);
   }
-  ui_->recvProgressBar->setMaximum(myTotalBytes);
-  ui_->recvProgressBar->setValue(myRcvedBytes);
-  double transpeed = myRcvedBytes / usedTime;
-  ui_->rfileSizeLineEdit->setText(tr("%1").arg(myTotalBytes / (1024 * 1024)) +
-                                 " MB");
-  ui_->recvSizeLineEdit->setText(tr("%1").arg(myRcvedBytes / (1024 * 1024)) +
-                                " MB");
-  ui_->rateLabel->setText(
-      tr("%1").arg(transpeed * 1000 / (1024 * 1024), 0, 'f', 2) + " MB/秒");
-  if (myRcvedBytes == myTotalBytes) {
-    myLocPathFile->close();
-    myCntSocket->close();
-    ui_->rateLabel->setText("接收完毕！");
+  ui_->receive_progress_bar->setMaximum(total_bytes_);
+  ui_->receive_progress_bar->setValue(received_bytes_);
+  double transmission_speed = received_bytes_ / used_time;
+  ui_->file_size_line_edit->setText(tr("%1").arg(total_bytes_ / (1024 * 1024)) +
+                                    " MB");
+  ui_->receive_size_line_edit->setText(
+      tr("%1").arg(received_bytes_ / (1024 * 1024)) + " MB");
+  ui_->rate_label->setText(
+      tr("%1").arg(transmission_speed * 1000 / (1024 * 1024), 0, 'f', 2) +
+      " MB/秒");
+  if (received_bytes_ == total_bytes_) {
+    file_->close();
+    client_socket_->close();
+    ui_->rate_label->setText("接收完毕！");
   }
 }
 
-void FileCntDlg::on_cntClosePushButton_clicked() {
-  myCntSocket->abort();
-  myLocPathFile->close();
+void FileClientDialog::on_client_close_push_button_clicked() {
+  client_socket_->abort();
+  file_->close();
   close();
 }
 
-void FileCntDlg::closeEvent(QCloseEvent*) {
-  on_cntClosePushButton_clicked();
+void FileClientDialog::closeEvent(QCloseEvent*) {
+  on_client_close_push_button_clicked();
 }

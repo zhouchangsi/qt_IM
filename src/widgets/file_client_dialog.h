@@ -11,44 +11,44 @@
 class QTcpSocket;
 
 namespace Ui {
-class FileCntDlg;
+class FileClientDialog;
 }
 
-class FileCntDlg : public QDialog {
+class FileClientDialog : public QDialog {
   Q_OBJECT
 
  public:
-  explicit FileCntDlg(QWidget* parent = 0);
-  ~FileCntDlg();
-  void getSrvAddr(QHostAddress saddr);
-  void getLocPath(QString lpath);
+  explicit FileClientDialog(QWidget* parent = 0);
+  ~FileClientDialog();
+  void set_server_address(QHostAddress saddr);
+  void set_file(QString path);
 
  protected:
   void closeEvent(QCloseEvent*);
 
  private slots:
-  void createConnToSrv();
+  void connect_to_server();
 
-  void readChatMsg();
+  void read_chat_message();
 
-  void on_cntClosePushButton_clicked();
+  void on_client_close_push_button_clicked();
 
  private:
-  Ui::FileCntDlg* ui_;
-  QTcpSocket* myCntSocket;
-  QHostAddress mySrvAddr;
-  qint16 mySrvPort;
+  Ui::FileClientDialog* ui_;
+  QTcpSocket* client_socket_;
+  QHostAddress server_address_;
+  qint16 server_port_;
 
-  qint64 myTotalBytes;
-  qint64 myRcvedBytes;
-  QByteArray myInputBlock;
-  quint16 myBlockSize;
+  qint64 total_bytes_;
+  qint64 received_bytes_;
+  QByteArray transmission_block_;
+  quint16 block_size_;
 
-  QFile* myLocPathFile;
-  QString myFileName;
-  qint64 myFileNameSize;
+  QFile* file_;
+  QString filename_;
+  qint64 filesize_;
 
-  QTime mytime;
+  QTime time_;
 };
 
 #endif  // FILECNTDLG_H

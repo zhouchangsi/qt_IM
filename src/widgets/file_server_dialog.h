@@ -23,7 +23,7 @@ class FileServerDialog : public QDialog {
  public:
   explicit FileServerDialog(QWidget* parent = 0);
   ~FileServerDialog();
-  void on_client_refused();
+  void handle_client_refused();
 
  protected:
   void closeEvent(QCloseEvent*);
@@ -53,10 +53,10 @@ class FileServerDialog : public QDialog {
   qint64 sent_bytes_;
   qint64 remaining_bytes_;
   qint64 payload_capacity_;
-  QByteArray cache_data_of_1_transmission_;
+  QByteArray transmission_block_;
   QTime time_;
  signals:
-  void sent_file_name(QString name);
+  void sent_filename(QString name);
 };
 
 #endif  // FILESRVDLG_H

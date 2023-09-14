@@ -18,12 +18,12 @@ class LoginDialog : public QDialog {
   ~LoginDialog();
 
  private slots:
-  void on_loginPushButton_clicked();
-  void showWeiChatWindow();
+  void on_login_push_button_clicked();
+  void show_wechat_window();
 
  private:
-  Ui::LoginDialog* ui;
-  MainWindow* weiChatWindow;
+  Ui::LoginDialog* ui_;
+  MainWindow* wechat_window_;
 };
 
 

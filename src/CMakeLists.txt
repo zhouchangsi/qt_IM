@@ -1,7 +1,4 @@
 set(target_name app)
-set(CMAKE_FIND_LIBRARY_CUSTOM_LIB_SUFFIX ON)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_STANDARD 17)
 
 
 # Enable debug logging on RELWITHDEBINFO configuration
