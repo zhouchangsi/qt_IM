@@ -1,5 +1,9 @@
+.cache
 .vscode
-CMakeUserPresets.json
+node_modules
+vcpkg_installed
 bin
 build
 install
+CMakeUserPresets.json
+pnpm-lock.yaml

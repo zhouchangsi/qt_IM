@@ -7,7 +7,6 @@
 #include <QTcpSocket>
 #include <QTime>
 
-
 class QTcpSocket;
 
 namespace Ui {
